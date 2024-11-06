@@ -21,7 +21,7 @@ app.post('/login', async (req, res) => {
     const { email, senha } = req.body;
 
     if (!email || !senha) {
-        return res.status(400).send('Email e senha são obrigatórios.');
+        return res.status(400).send('Usuário, Email e senha são obrigatórios.');
     }
 
     const usuario = usuarios.find(u => u.email === email);
