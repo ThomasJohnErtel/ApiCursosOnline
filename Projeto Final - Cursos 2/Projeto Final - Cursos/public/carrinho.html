@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+
+</head>
+<body>
+    <h1>Carrinho</h1>
+    <div id="carrinhos-list"></div> 
+
+    <h2>Carrinhos</h2>
+    <form id="add-form">
+        <label for="title">Título:</label>
+        <input type="text" id="title" name="title" placeholder="Título" required><br>
+    
+        <label for="description">Descrição:</label>
+        <input type="text" id="description" name="description" placeholder="Descrição" required><br>
+    
+        <label for="image_url">URL da Imagem:</label>
+        <input type="text" id="image_url" name="image_url" placeholder="URL da Imagem" required><br>
+    
+        <label for="trailer_url">URL do Trailer:</label>
+        <input type="text" id="trailer_url" name="trailer_url" placeholder="URL do Trailer" required><br>
+        
+        <button type="submit">Adicionar Auditoria Temporária</button>
+    </form>
+
+    <h2>Lista de Auditoria Temporária</h2>
+    <div id="temporary-list"></div>
+
+    <script>
+    // Função para carregar os dados do JSON (reservas.json)
+    async function loadCarrinhosData() {
+        const container = document.getElementById('carrinhos-list');
+        container.innerHTML = '';
+
+        try {
+            const response = await fetch('/carrinhos');
+            const reservas = await response.json();
+
+            reservas.forEach(carrinho => {
+                const card = document.createElement('div');
+                card.className = 'movie-card';
+                card.innerHTML = `
+                    <img src="${carrinho.foto}" alt="${carrinho.nome}">
+                    <h2>${carrinho.nome}</h2>
+                    <p><strong>Descrição:</strong> ${carrinho.descricao}</p>
+                    <p><strong>Elenco:</strong> ${carrinho.elenco}</p>
+                `;
+                container.appendChild(card);
+            });
+        } catch (error) {
+            console.error('Erro ao carregar os dados de reservas:', error);
+        }
+    }
+
+    // Função para carregar os dados temporários
+    async function loadTemporaryData() {
+        const container = document.getElementById('temporary-list');
+        container.innerHTML = '';
+
+        try {
+            const response = await fetch('/temporarios');
+            const temporarios = await response.json();
+
+            temporarios.forEach(temporario => {
+                const card = document.createElement('div');
+                card.className = 'movie-card';
+                card.innerHTML = `
+                    <img src="${temporario.image_url}" alt="${temporario.title}">
+                    <h2>${temporario.title}</h2>
+                    <p><strong>Descrição:</strong> ${temporario.description}</p>
+                    <p><strong>Trailer:</strong> ${temporario.trailer_url}</p>
+                    <button onclick="deleteTemporary(${temporario.id})">Excluir</button>
+                `;
+                container.appendChild(card);
+            });
+        } catch (error) {
+            console.error('Erro ao carregar os dados temporários:', error);
+        }
+    }
+
+    async function deleteTemporary(id) {
+        try {
+            const response = await fetch(`/temporarios/${id}`, { 
+                method: "DELETE"
+            });
+
+            if (response.ok) {
+                console.log(`Item temporário com ID ${id} excluído.`);
+                loadTemporaryData();
+            } else {
+                console.error('Erro ao excluir o item temporário');
+            }
+        } catch (error) {
+            console.error('Erro ao excluir o item temporário:', error);
+        }
+    }
+
+    // Adicionar um item temporário
+    document.getElementById("add-form").addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const dados = {
+            title: document.getElementById("title").value,
+            description: document.getElementById("description").value,
+            image_url: document.getElementById("image_url").value,
+            trailer_url: document.getElementById("trailer_url").value
+        };
+
+        try {
+            const response = await fetch("/temporarios", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(dados)
+            });
+            const novoCarrinho = await response.json();
+            console.log("Adição criada:", novoCarrinho);
+            loadTemporaryData();
+        } catch (error) {
+            console.error("Erro ao criar o item temporário:", error);
+        }
+    });
+
+    loadCarrinhosData(); // Carrega o JSON de carrinhos
+    loadTemporaryData(); // Carrega dados temporários
+    </script>
+</body>
+</html>
