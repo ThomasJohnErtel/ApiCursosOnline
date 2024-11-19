@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas de Cursos</title>
+    <link rel="stylesheet" href="courses.css">
+</head>
+<body>
+
+    <h1>Cursos para Reserva</h1>
+
+    
+    <h2>Adicionar Curso</h2>
+    <form id="addCurso">
+        <form id="addCurso">
+            <label for="nome">Curso:</label>
+            <input type="text" id="nome" name="nome" required>
+            <br>
+        
+            <label for="descricao">Descrição:</label>
+            <input type="text" id="descricao" name="descricao" required>
+            <br>
+        
+            <label for="duracao">Tempo de Duração:</label>
+            <input type="text" id="duracao" name="duracao" required>
+            <br>
+        
+            <label for="preco">Preços do Curso:</label>
+            <input type="number"  id="preco" name="preco" required>
+            <br>
+        
+            <label for="data_inicio">Data do Início:</label>
+            <input type="date" id="data_inicio" name="data_inicio" required>
+            <br>
+        
+            <label for="limite_alunos">Limite de Alunos:</label>
+            <input type="number" id="limite_alunos" name="limite_alunos" required>
+            <br>
+        
+            <button type="submit">Adicionar</button>
+
+            <button onclick="window.location.href='avaliacao.html'">Ir para avaliacao</button>
+    </form>
+    <h2>Lista dos Cursos</h2>
+    <div id="curso-list"></div>
+    
+
+
+    <script>
+        // adicionar um curso
+        document.getElementById("addCurso").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const dados = {
+                nome: document.getElementById("nome").value,
+        descricao: document.getElementById("descricao").value,
+        duracao: document.getElementById("duracao").value,
+        preco: document.getElementById("preco").value,
+        data_inicio: document.getElementById("data_inicio").value,
+        limite_alunos: document.getElementById("limite_alunos").value
+            };
+
+            try {
+                const response = await fetch("/api/cursos", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(dados)
+                });
+                const novoCurso = await response.json();
+                console.log("Curso adicionado:", novoCurso);
+                loadCursos(); 
+            } catch (erro) {
+                console.erro("Problema ao adicionar o curso:", erro);
+            }
+        }
+    );
+
+        
+        async function loadCursos() {
+            const container = document.getElementById('curso-list');
+            container.innerHTML = ''; 
+
+            try {
+                const response = await fetch("/api/cursos");
+                const cursos = await response.json();
+
+                cursos.forEach(curso => {
+                    const card = document.createElement('div');
+                    card.className = 'curso-card';
+                    card.innerHTML = `
+                        <h3>${curso.nome}</h3>
+                        <p><strong>duracao:</strong> ${curso.duracao}</p>
+                        <p><strong>Preço:</strong> ${curso.preco}</p>
+                        <p><strong>descricao:</strong> ${curso.descricao}</p>
+                        <p><strong>Especificações:</strong> ${curso.data_inicio}</p>
+                        <p><strong>Preço Domicílio:</strong> ${curso.limite_alunos}</p>
+                       
+                    `;
+                    container.appendChild(card);
+                }
+            );
+            } catch (erro) {
+                console.erro("Problema ao carregar:", erro);
+            }
+        }
+
+       
+        
+
+        // Carregar os dados ao carregar a página
+        loadCursos();
+       
+    </script>
+
+</body>
+</html>

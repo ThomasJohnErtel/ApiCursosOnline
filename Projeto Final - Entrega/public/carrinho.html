@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../carrinho.css">
+    <title>carrinho</title>
+</head>
+<body>
+    <h1>Carrinho</h1>
+    <div id="carrinho-list"></div>
+
+    <h2>Adicionar o item ao Carrinho</h2>
+    <form id="add-item">
+        <label for="nomeProduto">Produto:</label>
+        <input type="text" id="nomeProduto" name="nomeProduto" placeholder="Nome do Produto" required><br>
+
+        <label for="descricao">Descrição:</label>
+        <input type="text" id="descricao" name="descricao" placeholder="Descrição" required><br>
+        
+        <label for="quantidade">Quantidade:</label>
+        <input type="number" id="quantidade" name="quantidade" placeholder="quantidade" required><br>
+        
+        <label for="preco">Preço:</label>
+        <input type="number" id="preco" name="preco" placeholder="preco" required><br>
+        
+        <label for="imagem">URL da Imagem:</label>
+    <input type="text" id="imagem" name="imagem" placeholder="URL da Imagem" required><br>
+
+    <button type="submit">Adicionar Compra </button>
+
+    </form>
+
+    <h2>Lista de Auditados</h2>
+    <div id="carrito-list"></div>
+
+    <script>
+        //  carregar os dados JSON 
+        async function loadCarrinhoData() {
+            const container = document.getElementById('carrinho-list');
+            container.innerHTML = '';
+
+            try {
+                const response = await fetch('/carrinhos');
+                const carrinhos = await response.json();
+
+                carrinhos.forEach(carrinho => {
+                    const card = document.createElement('div');
+                    card.className = 'movie-card';
+                    card.innerHTML = ` 
+                    
+                       <h2>${carrinho.nomeProduto}</h2>
+    <p><strong>Descrição:</strong> ${carrinho.descricao}</p>
+    <p><strong>Quantidade:</strong> ${carrinho.quantidade}</p>
+    <p><strong>Preço:</strong> ${carrinho.preco}</p>
+    <p><strong>Imagem:</strong></p>
+    <img src="${carrinho.imagem}" alt="${carrinho.nomeProduto}">
+                     <button onclick="deleteCarrito(${carrinho.id})">Excluir</button>
+
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Deu erro ao carregar os dados:', error);
+            }
+        }
+
+        //  carregar dados 
+        async function loadCarritoData() {
+            const container = document.getElementById('carrito-list');
+            container.innerHTML = '';
+
+            try {
+                const response = await fetch('/carrinhos');
+                const carritos = await response.json();
+
+                carritos.forEach(carrito => {
+                    const card = document.createElement('div');
+                    card.className = 'movie-card';
+                    card.innerHTML = `
+                      <h2>${carrinho.nomeProduto}</h2>
+    <p><strong>Descrição:</strong> ${carrinho.descricao}</p>
+    <p><strong>Quantidade:</strong> ${carrinho.quantidade}</p>
+    <p><strong>Preço:</strong> ${carrinho.preco}</p>
+    <p><strong>Imagem:</strong></p>
+    <img src="${carrinho.imagem}" alt="${carrinho.nomeProduto}">
+    <button onclick="deleteCarrito(${carrinho.id})">Excluir</button>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (erro) 
+            {
+                console.error('Deu erro ao carregar os dados:', erro);
+            }
+        }
+
+        
+        async function deleteCarrito(id) {
+    try {
+        const response = await fetch(`/carrinhos/${id}`, {
+            method: "DELETE"
+        });
+
+        if (response.ok) {
+            console.log(`Item com ID ${id} excluído.`);
+
+            // Atualizar
+            loadCarrinhoData();
+        } else {
+            console.error('Erro ao excluir os item do carrinho');
+        }
+    } catch (erro) {
+        console.error('Erro ao excluir os item do carrinho', erro);
+    }
+}
+
+        // adicionar um item 
+        document.getElementById("add-item").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const dados = {
+                nomeProduto: document.getElementById("nomeProduto").value,
+        descricao: document.getElementById("descricao").value,
+        quantidade: document.getElementById("quantidade").value,
+        preco: document.getElementById("preco").value,
+        imagem: document.getElementById("imagem").value,
+        
+
+            };
+
+            try {
+                const response = await fetch("/carrinhos", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(dados)
+                });
+
+                if (response.ok) {
+                    console.log("adicionado  sucesso.");
+                    loadCarrinhoData(); 
+                } else {
+                    console.error("erro ao adicionar.");
+                }
+            } catch (error) {
+                console.error("erro ao adicionar:", error);
+            }
+        });
+
+       
+        loadCarrinhoData(); // Carrega o JSON 
+
+    </script>
+</body>
+</html>
+

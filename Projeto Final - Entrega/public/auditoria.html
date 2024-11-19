@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../auditoria.css">
+    <title>Auditoria</title>
+</head>
+<body>
+    <h1>Auditoria</h1>
+    <div id="auditoria-list"></div>
+
+    <h2>Adicionar Item</h2>
+    <form id="add-iten">
+        <label for="nomeCurso">Curso:</label>
+        <input type="text" id="nomeCurso" name="nomeCurso" placeholder="Nome do Curso" required><br>
+
+        <label for="descricao">Descrição:</label>
+        <input type="text" id="descricao" name="descricao" placeholder="Descrição" required><br>
+        
+        <label for="professor">Professor:</label>
+        <input type="text" id="professor" name="professor" placeholder="Nome do Professor" required><br>
+        
+        <label for="duracao">Duração:</label>
+        <input type="text" id="duracao" name="duracao" placeholder="Duração" required><br>
+        
+        <label for="dataInicio">Data de Início:</label>
+        <input type="date" id="dataInicio" name="dataInicio" required><br>
+        
+        <label for="dataTermino">Data de Término:</label>
+        <input type="date" id="dataTermino" name="dataTermino" required><br>
+        
+        <label for="categoria">Categoria:</label>
+        <input type="text" id="categoria" name="categoria" placeholder="Categoria" required><br>
+        
+        <label for="linkCurso">Link do Curso:</label>
+        <input type="text" id="linkCurso" name="linkCurso" placeholder="Link do Curso" required><br>
+        <button type="submit">Adicionar Curso</button>
+
+    </form>
+
+    <h2>Lista de Auditados</h2>
+    <div id="audito-list"></div>
+
+    <script>
+        // carregar os dados do JSON 
+        async function loadAuditoriaData() {
+            const container = document.getElementById('auditoria-list');
+            container.innerHTML = '';
+
+            try {
+                const response = await fetch('/auditoria');
+                const auditorias = await response.json();
+
+                auditorias.forEach(auditoria => {
+                    const card = document.createElement('div');
+                    card.className = 'movie-card';
+                    card.innerHTML = `
+                        <h2>${auditoria.nomeCurso}</h2>
+                      <p><strong>Descrição:</strong> ${auditoria.descricao}</p>
+                      <p><strong>Professor:</strong> ${auditoria.professor}</p>
+                      <p><strong>Duração:</strong> ${auditoria.duracao}</p>
+                      <p><strong>Data de Início:</strong> ${auditoria.dataInicio}</p>
+                      <p><strong>Data de Término:</strong> ${auditoria.dataTermino}</p>
+                      <p><strong>Categoria:</strong> ${auditoria.categoria}</p>
+                      <p><strong>Link do Curso:</strong> <a href="${auditoria.linkCurso}" target="_blank">${auditoria.linkCurso}</a></p>
+
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Deu erro ao carregar os dados:', error);
+            }
+        }
+
+        //  carregar dados 
+        async function loadAuditoData() {
+            const container = document.getElementById('audito-list');
+            container.innerHTML = '';
+
+            try {
+                const response = await fetch('/auditorias');
+                const auditos = await response.json();
+
+                auditos.forEach(audito => {
+                    const card = document.createElement('div');
+                    card.className = 'movie-card';
+                    card.innerHTML = `
+                        <h2>${audito.nomeCurso}</h2>
+                        <p><strong>Descrição:</strong> ${audito.descricao}</p>
+                        <p><strong>Professor:</strong> ${audito.professor}</p>
+                        <p><strong>Duração:</strong> ${audito.duracao}</p>
+                        <p><strong>Data de Início:</strong> ${audito.dataInicio}</p>
+                        <p><strong>Data de Término:</strong> ${audito.dataTermino}</p>
+                        <p><strong>Categoria:</strong> ${audito.categoria}</p>
+                        <p><strong>Link do Curso:</strong> <a href="${audito.linkCurso}" target="_blank">${audito.linkCurso}</a></p>
+                        <button onclick="deleteAudito(${audito.id})">Excluir</button>
+
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (erro) 
+            {
+                console.error('Deu erro ao carregar os dados:', erro);
+            }
+        }
+
+        //excluir diretamnete pelo id, mais facil assim
+        async function deleteAudito(id) {
+            try {
+                const response = await fetch(`/auditorias/${id}`, {
+                    method: "DELETE"
+                });
+                
+                if (response.ok) {
+                    console.log(`usando o id para  ${id} excluír.`);
+                    loadAuditoData(); 
+                } else {
+                    console.erro('Deu erro ao carregar os item');
+                }
+            } catch (erro) 
+            {
+                console.erro('Deu erro ao carregar os item:', erro);
+            }
+        }
+
+        // adicionar um item
+        document.getElementById("add-iten").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const dados = {
+                nomeCurso: document.getElementById("nomeCurso").value,
+        descricao: document.getElementById("descricao").value,
+        professor: document.getElementById("professor").value,
+        duracao: document.getElementById("duracao").value,
+        dataInicio: document.getElementById("dataInicio").value,
+        dataTermino: document.getElementById("dataTermino").value,
+        categoria: document.getElementById("categoria").value,
+        linkCurso: document.getElementById("linkCurso").value
+
+            };
+
+            try {
+                const response = await fetch("/auditorias", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(dados)
+                });
+                const novoAudito = await response.json();
+                console.log("Adição criada:", novoAudito);
+                loadAuditoData();
+            } catch (erro) {
+                console.erro("Erro ao criar os item :", erro);
+            }
+        });
+
+       
+        loadAuditoriaData(); // JSON original
+        loadAuditoData(); // Carrega dados 
+    </script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliações de Cursos</title>
+    <link rel="stylesheet" href="avaliacao.css">
+</head>
+<body>
+
+    <h1>Cursos para Avaliações</h1>
+
+    
+    <h2>Avaliações</h2>
+    <form id="addAvali">
+        <label for="nome">Nome do seu Curso:</label>
+        <input type="text" id="nome" name="nome" required>
+        <br>
+    
+        <label for="descricao">Descrição:</label>
+        <input type="text" id="descricao" name="descricao" required>
+        <br>
+    
+        <label for="questoes">Questões do Curso:</label>
+        <input type="text" id="questoes" name="questoes" required>
+        <br>
+    
+        <label for="pontuacao_maxima">Nota Máxima:</label>
+        <input type="number" id="pontuacao_maxima" name="pontuacao_maxima" required>
+        <br>
+    
+        <label for="duracao">Tempo de Duração:</label>
+        <input type="text" id="duracao" name="duracao" required>
+        <br>
+    
+        <label for="data_inicio">Data de Início:</label>
+        <input type="date" id="data_inicio" name="data_inicio" required>
+        <br>
+    
+        <button type="submit">Enviar</button>
+
+        <br>
+
+        <button onclick="window.location.href='index.html'">Ir para o Cálculo de Média</button>
+    </form>
+    
+    
+
+    <h2>Lista das Avaliações</h2>
+    <div id="avaliacao-list"></div>
+
+    <script>
+        // adicionar um curso
+        document.getElementById("addAvali").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const dados = {
+                nome: document.getElementById("nome").value,
+        descricao: document.getElementById("descricao").value,
+        questoes: document.getElementById("questoes").value,
+        pontuacao_maxima: document.getElementById("pontuacao_maxima").value,
+        duracao: document.getElementById("duracao").value,
+        data_inicio: document.getElementById("data_inicio").value
+            };
+
+            try {
+                const response = await fetch("/api/avaliacoes", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(dados)
+                });
+                const novoAvaliacao = await response.json();
+                console.log("Curso adicionado:", novoAvaliacao);
+                loadAvaliacoes(); 
+            } catch (erro) {
+                console.erro("Problema ao adicionar o curso:", erro);
+            }
+        }
+    );
+
+        
+        
+       
+        async function loadAvaliacoes() {
+            const container = document.getElementById('avaliacao-list');
+            container.innerHTML = ''; 
+
+            try {
+                const response = await fetch("/api/avaliacoes");
+                const avaliacoes = await response.json();
+
+                avaliacoes.forEach(avaliacao => {
+                    const card = document.createElement('div');
+                    card.className = 'avaliacao-card';
+                    card.innerHTML = `
+                        <h3>${avaliacao.nome}</h3>
+                        <p><strong>descricao:</strong> ${avaliacao.descricao}</p>
+                        <p><strong>questoes:</strong> ${avaliacao.questoes}</p>
+                        <p><strong>pontuacao maxima:</strong> ${avaliacao.pontuacao_maxima}</p>
+                        <p><strong> data do inicio:</strong> ${avaliacao.duracao}</p>
+                        <p><strong> data do inicio:</strong> ${avaliacao. data_inicio}</p>
+                      
+                    `;
+                    container.appendChild(card);
+                }
+            );
+            } catch (erro) {
+                console.erro("Problemas ao carregar as avaliações:", erro);
+            }
+
+            
+        }
+        
+        // Carregar os dados ao carregar a página
+       
+        loadAvaliacoes();
+    </script>
+
+</body>
+</html>

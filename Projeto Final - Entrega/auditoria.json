@@ -1,0 +1,12 @@
+[
+  {
+    "nomeCurso": "Curso de JavaScript",
+    "descricao": "Aprenda JavaScript de maneira prática e eficiente.",
+    "professor": "João Silva",
+    "duracao": "30 horas",
+    "dataInicio": "2024-11-20",
+    "dataTermino": "2024-12-20",
+    "categoria": "Tecnologia",
+    "linkCurso": "https://www.oracle.com/br/education/training/java/"
+}
+]

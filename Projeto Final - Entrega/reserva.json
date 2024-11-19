@@ -1,0 +1,25 @@
+[
+    {
+        "nomeDoAluno": "Reserva 1",
+        "emailDoAluno": "ssfesfesfe@dfsefef",
+        "dataDaReserva": "2024-11-15",
+        "horario": "24:12",
+        "duracao": "9h"
+    },
+    {
+        "nomeDoAluno": "Reserva 2",
+        "emailDoAluno": "sdsd@dadwdd",
+        "dataDaReserva": "2024-11-15",
+       "horario": "25:12",
+        "duracao": "3h"
+    },
+
+    {
+        "nomeDoAluno": "Reserva 3",
+        "emailDoAluno": "sdsd@rtrete",
+        "dataDaReserva": "2024-11-15",
+       "horario": "12:12",
+        "duracao": "7h"
+    }
+]
+

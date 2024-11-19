@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../reserva.css">
+    <title>reserva</title>
+</head>
+<body>
+    <h1>Reserva</h1>
+    <div id="reserva-list"></div>
+
+    <h2>Adicionar o item a Reserva</h2>
+    <form id="add-item">
+        <label for="nomeDoAluno">Nome:</label>
+        <input type="text" id="nomeDoAluno" name="nomeDoAluno" placeholder="Nome do Aluno" required><br>
+        
+        <label for="emailDoAluno">Email:</label>
+        <input type="text" id="emailDoAluno" name="emailDoAluno" placeholder="email do Aluno" required><br>
+        
+        <label for="dataDaReserva">Data:</label>
+        <input type="date" id="dataDaReserva" name="dataDaReserva" placeholder="data Da Reserva" required><br>
+        
+        <label for="horario">Horario:</label>
+        <input type="time" id="horario" name="horario" placeholder="horario" required><br>
+        
+        <label for="duracao">Duracao do curso(H):</label>
+        <input type="text" id="duracao" name="duracao" placeholder="duracao" required><br>
+
+        <button type="submit">Adicionar Reserva</button>>
+        
+    </form>
+
+    <h2>Lista de reserva</h2>
+    <div id="reserva-list"></div>
+
+    <script>
+        //carregar os dados do JSON 
+        async function loadReservaData() {
+            const container = document.getElementById('reserva-list');
+            container.innerHTML = '';
+
+            try {
+                const response = await fetch('/reservas');
+                const reservas = await response.json();
+
+                reservas.forEach(reserva => {
+                    const card = document.createElement('div');
+                    card.className = 'movie-card';
+                    card.innerHTML = ` 
+                    
+                       <h2>${reserva.nomeDoAluno}</h2>
+    <p><strong>Email:</strong> ${reserva.emailDoAluno}</p>
+    <p><strong>Data:</strong> ${reserva.dataDaReserva}</p>
+    <p><strong>Horario:</strong> ${reserva.horario}</p>
+            <p><strong>Duracao:</strong> ${reserva.duracao}</p>
+                     <button onclick="deleteCarrito(${reserva.id})">Excluir</button>
+
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Deu erro ao carregar os dados:', error);
+            }
+        }
+
+        // carregar dados 
+        async function loadReserData() {
+            const container = document.getElementById('reser-list');
+            container.innerHTML = '';
+
+            try {
+                const response = await fetch('/reservas');
+                const Resers = await response.json();
+
+                Resers.forEach(Reser => {
+                    const card = document.createElement('div');
+                    card.className = 'movie-card';
+                    card.innerHTML = `
+                   <h2>${reserva.nomeDoAluno}</h2>
+    <p><strong>Email:</strong> ${reserva.emailDoAluno}</p>
+    <p><strong>Data:</strong> ${reserva.dataDaReserva}</p>
+    <p><strong>Horario:</strong> ${reserva.horario}</p>
+            <p><strong>Duracao:</strong> ${reserva.duracao}</p>
+                     <button onclick="deleteCarrito(${reserva.id})">Excluir</button>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (erro) 
+            {
+                console.error('Deu erro ao carregar os dados:', erro);
+            }
+        }
+
+       
+        async function deleteReser(id) {
+    try {
+        const response = await fetch(`/reservas/${id}`, {
+            method: "DELETE"
+        });
+
+        if (response.ok) {
+            console.log(`Item com ID ${id} excluído.`);
+
+            // Atualiza a lista
+            loadReservaData();
+        } else {
+            console.error('Erro ao excluir os item do carrinho');
+        }
+    } catch (erro) {
+        console.error('Erro ao excluir os item do carrinho', erro);
+    }
+}
+
+        // adicionar item 
+        document.getElementById("add-item").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const dados = {
+                nomeDoAluno: document.getElementById("nomeDoAluno").value,
+                emailDoAluno: document.getElementById("emailDoAluno").value,
+                dataDaReserva: document.getElementById("dataDaReserva").value,
+                horario: document.getElementById("horario").value,
+                duracao: document.getElementById("duracao").value,
+    
+        
+
+            };
+
+            try {
+                const response = await fetch("/reservas", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(dados)
+                });
+
+                if (response.ok) {
+                    console.log("adicionado  sucesso.");
+                    loadReservaData(); // Atualiza 
+                } else {
+                    console.error("erro ao adicionar.");
+                }
+            } catch (error) {
+                console.error("erro ao adicionar:", error);
+            }
+        });
+
+       
+        loadReservaData(); // Carrega o JSON 
+
+    </script>
+</body>
+</html>
